@@ -1,0 +1,35 @@
+doctype html
+html(lang="en")
+    include includes/head.pug
+    body
+      script(src='sdk-load.js')
+      script(src='./fr-admin.js')
+      #content
+        #title
+          //h1 Brief
+          img.logo(src='images/brief-logo.svg' title="Brief")
+          h6 Your Daily Facebook Email
+          a.btn.btn-primary.btn-xs(class="faq-link", href="/faq") FAQ
+          #welcome
+            button#auth.btn.btn-primary.btn-lg(style='display:none') Connect your Facebook account
+        #loading(style='width: 750px; margin: 10px;display:none;')
+            h2 Checking Credentials
+            img(id='load-gif', class='load-gif', src='images/loading.gif')
+        #settings(style='width: 750px; margin: 10px;display:none;')
+          h4 User List
+            button.btn.btn-primary.btn-xs(style="float:right")#refresh Refresh
+          #notification.alert(style="display:none;")
+          table#users(style='width: 750px; margin: 10px;').table.tablehover
+            tr
+              th Active
+              th Token Expire
+              th Created
+              th Email
+              th Include Read
+              th Mark Read
+              th Inc Old
+              th Updated
+              th Delete
+          a#more-users Get More Users
+          #results
+      include includes/footer.pug

@@ -1,12 +1,38 @@
 {
-  "name": "openshift-cartridge-nodejs-template",
-  "version": "1.0.1",
-  "description": "Custom Node.js cartridge for OpenShift - sample application",
-  "private": true,
-  "main": "start.js",
+  "name": "facebook-email",
+  "version": "1.0.0",
+  "description": "Facebook Daily Email",
   "scripts": {
-    "start": "node --use_strict start.js"
+    "start": "node server.js"
   },
-  "author": "Ionut-Cristian Florescu <ionut.florescu@gmail.com>",
-  "license": "ISC"
+  "main": "server.js",
+  "keywords": [
+    "OpenShift",
+    "Node.js",
+    "application",
+    "openshift",
+    "facebook",
+    "email"
+  ],
+  "author": {
+    "name": "Laura Gerhardt",
+    "email": "facebookdailyemail@gmail.com",
+    "url": "http://fb-daily.rhcloud.com/"
+  },
+  "dependencies": {
+    "dotenv": "^2.0.0",
+    "express": "^3.4.8",
+    "mongojs": "^2.4.0",
+    "nodemailer": "^2.7.0",
+    "pug": "^2.0.0-beta6",
+    "socket.io": "^1.7.2",
+    "superagent": "^3.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.12.2",
+    "eslint-config-airbnb-base": "^11.0.0",
+    "eslint-plugin-import": "^2.2.0"
+  },
+  "bundleDependencies": [],
+  "private": true
 }

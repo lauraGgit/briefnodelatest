@@ -1,0 +1,20 @@
+doctype html
+html(lang="en")
+    include includes/head.pug
+    body
+      script(src='sdk-load.js')
+      script(src='/fr-extend-get-new-user.js')
+      #content
+              #title
+              #welcome
+          #loading(style='width: 750px; margin: 10px;display:none;')
+              h3 Creating Account
+              img(id='load-gif', class='load-gif', src='images/loading.gif')
+              //#notification.alert(style="display:none;")
+              #complete(style="display:none;")
+                h3 Ok, your account is now all setup. Tomorrow, you'll wake up with a Brief in your inbox. Enjoy!
+              #settingsReturn(style="display:none;")
+                h3 Give us one more minute to take you back to your settings.
+          #settings(style='width: 750px; margin: 10px;display:none;')
+          footer
+            small Copyright 2014
