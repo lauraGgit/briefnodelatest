@@ -1,5 +1,5 @@
 'use strict';
-require('dotenv').config();
+require('dotenv').config({silent: true});
 const express = require('express');
 const mongojs = require('mongojs');
 const inc = require('./utils/dbConfig');

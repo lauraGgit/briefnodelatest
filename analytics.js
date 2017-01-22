@@ -18,17 +18,3 @@ var d = new Date();
 statObj = {users: 0};
 
 db.analytics.save({date: d, users: 2});
-// db.ulist.find({active:1}).forEach(function(err, doc) {
-// 	if(doc){
-// 	statObj.users += 1;
-// 	}
-// 	//console.log('Total Active Users:' + stats.users);
-	
-
-// //db.analytics.save({date:d}, {active_users: statObj.users});
-// db.close(function(){
-// 		console.log('Tot'+statObj.users);
-// 	});
-//});  // end of db connection
-
-

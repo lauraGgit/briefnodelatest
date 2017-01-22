@@ -1,6 +1,6 @@
 let connection_string = '';
 if(process.env.LOCAL_DB){
-  connection_string = '127.0.0.1:27017/fb';
+  connection_string = process.env.LOCAL_DB;
 }
 // if OPENSHIFT env variables are present, use the available connection info:
 if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
