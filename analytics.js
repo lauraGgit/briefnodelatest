@@ -1,5 +1,3 @@
-
-
 var mongojs = require('mongojs');
 var https = require('https');
 var nodemailer = require('nodemailer');

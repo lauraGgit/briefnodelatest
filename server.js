@@ -4,7 +4,6 @@ const express = require('express');
 const mongojs = require('mongojs');
 const inc = require('./utils/dbConfig');
 const fbConnection = require('./utils/fbConnection');
-const oldRequest = require('request');
 const request = require('superagent');
 
 const app = express();
@@ -55,20 +54,33 @@ app.get('/server-get', (req, res) => {
 
 // url used to search yql
   const url = `https://graph.facebook.com/oauth/access_token?${clientCredentialString}&grant_type=fb_exchange_token&fb_exchange_token=${tradeToken}`;
-  console.log(url);
+  // console.log(url);
 
  // request module is used to process the yql url and return the results in JSON format
-  oldRequest(url, (err, resp, body) => {
-    const data = parseExtend(body);
-   // logic used to compare search results with the input from user
-    const nowTime = Math.round(new Date().getTime() / 1000.0);
-    const combTime = Number(data.expires) + nowTime;
-   // console.log(combTime);
-    Users.update({ fbid: fbID }, { $set: { 'atokens.perm': { tok: data.access_token, exp: combTime, date_updated: nowTime } } },
-          () => {
-            res.send('Token Updated');
-          }
-        );
+  // oldRequest(url, (err, resp, body) => {
+  //   const data = parseExtend(body);
+  //  // logic used to compare search results with the input from user
+  //   const nowTime = Math.round(new Date().getTime() / 1000.0);
+  //   const combTime = Number(data.expires) + nowTime;
+  //  // console.log(combTime);
+  //   Users.update({ fbid: fbID }, { $set: { 'atokens.perm': { tok: data.access_token, exp: combTime, date_updated: nowTime } } },
+  //         () => {
+  //           res.send('Token Updated');
+  //         }
+  //       );
+  // });
+  request
+  .get(url)
+  .end(function(err, res){
+      const data = parseExtend(body);
+      // logic used to compare search results with the input from user
+      const nowTime = Math.round(new Date().getTime() / 1000.0);
+      const combTime = Number(data.expires) + nowTime;
+      Users.update({ fbid: fbID }, { $set: { 'atokens.perm': { tok: data.access_token, exp: combTime, date_updated: nowTime } } },
+            () => {
+              res.send('Token Updated');
+            }
+          );
   });
 });
 
