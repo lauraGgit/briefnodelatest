@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({silent: true});
 const mongojs = require('mongojs');
 const request = require('superagent');
 const fbConnection = require('../utils/fbConnection');
