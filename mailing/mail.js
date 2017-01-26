@@ -177,12 +177,14 @@ function compileNotificationText(notification, displayOldNotifications, sectionH
                       <p style="color:#444; font-family:lucida grande, tahoma, verdana, arial, sans-serif;padding:5px"> \
                       <a style="color:#3b5998;font-weight:bold;text-decoration:none;" href="http://www.facebook.com/${notification.from.id}">${name}</a>`;
 
-    if (notification.object != undefined) {
-      const noRepeatTitle = elminateRepeatedTitleText(truncatedTitle);
-      noteText += `<a style="color:#444;text-decoration:none" href="${notification.link}"> ${noRepeatTitle}</a>`;
-      noteText += `<div style="margin: 2px">${notification.object.message}</div>`;
-    } else {
-      noteText += `<a style="color:#444;text-decoration:none" href="${notification.link}"> ${truncatedTitle}</a>`;
+    if (notification.object) {
+      if (notification.object.message) {
+        const noRepeatTitle = elminateRepeatedTitleText(truncatedTitle);
+        noteText += `<a style="color:#444;text-decoration:none" href="${notification.link}"> ${noRepeatTitle}</a>`;
+        noteText += `<div style="margin: 2px">${notification.object.message}</div>`;
+      } else {
+        noteText += `<a style="color:#444;text-decoration:none" href="${notification.link}"> ${truncatedTitle}</a>`;
+      }
     }
     noteText += '</div>';
     let includeInGroup;
