@@ -6,8 +6,11 @@ const mailUtil = require('./mailUtil');
 const dateUtil = require('../utils/dateUtils');
 const dbConfig = require('../utils/dbConfig');
 
+console.log("things loaded");
 const db = mongojs(dbConfig.connection_string, ['ulist']);
 const Users = db.collection('ulist');
+
+console.log("past db conn");
 
 Users.find({ active: 1 }).forEach(
   (err, user) => {
