@@ -15,7 +15,6 @@ Users.find({ active: 1 }).forEach(
     if (err) throw (err);
     if (user) {
       const validToken = isNotExpired(user);
-      console.log('user found and such');
       if (validToken) {
         buildNotificationEmail(user);
       } else {

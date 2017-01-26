@@ -51,24 +51,7 @@ app.get('/server-get', (req, res) => {
  // input value from search
   const tradeToken = req.query.token;
   const fbID = parseInt(req.query.fbid, 10);
-
-// url used to search yql
   const url = `https://graph.facebook.com/oauth/access_token?${clientCredentialString}&grant_type=fb_exchange_token&fb_exchange_token=${tradeToken}`;
-  // console.log(url);
-
- // request module is used to process the yql url and return the results in JSON format
-  // oldRequest(url, (err, resp, body) => {
-  //   const data = parseExtend(body);
-  //  // logic used to compare search results with the input from user
-  //   const nowTime = Math.round(new Date().getTime() / 1000.0);
-  //   const combTime = Number(data.expires) + nowTime;
-  //  // console.log(combTime);
-  //   Users.update({ fbid: fbID }, { $set: { 'atokens.perm': { tok: data.access_token, exp: combTime, date_updated: nowTime } } },
-  //         () => {
-  //           res.send('Token Updated');
-  //         }
-  //       );
-  // });
   request
   .get(url)
   .end(function(err, res){
