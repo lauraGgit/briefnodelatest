@@ -11,6 +11,7 @@ const Users = db.collection('ulist');
 
 Users.find({ active: 1 }).forEach(
   (err, user) => {
+    if (err) console.log('throwing err');
     if (err) throw (err);
     if (user) {
       const validToken = isNotExpired(user);
