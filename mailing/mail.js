@@ -181,7 +181,7 @@ function compileNotificationText(notification, displayOldNotifications, sectionH
       if (notification.object.message) {
         const noRepeatTitle = elminateRepeatedTitleText(truncatedTitle);
         noteText += `<a style="color:#444;text-decoration:none" href="${notification.link}"> ${noRepeatTitle}</a>`;
-        noteText += `<div style="margin: 2px">${notification.object.message}</div>`;
+        noteText += `<div><p style="padding:5px">${notification.object.message}</p></div>`;
       } else {
         noteText += `<a style="color:#444;text-decoration:none" href="${notification.link}"> ${truncatedTitle}</a>`;
       }
