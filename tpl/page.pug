@@ -40,31 +40,32 @@ html(lang="en")
           h2 Settings
           form#setForm
             label(for='email') Email
-            input#email.form-control(type='text', name='email', data-validation="email", data-validation-help="Please enter a valid email")
-            br
-            label(for='inRead') Include Read Notifications
+            input#email.form-control(type='text' name='email' data-validation="email" data-validation-help="Please enter a valid email" disabled)
+            small You may only use the email address you have on file with Facebook.
+            h4 Brief Options
+            label(for='inRead') Only show new notifications
               br
-              input#read(type='radio', name ='inRead', value='1')
-              |Include previously read notifications
-              input#unread(type='radio', name ='inRead', value='0')
-              |Only show me unread notifications
+              input#read(type='radio', name ='inRead', value='0')
+              |Yes
+              input#unread(type='radio', name ='inRead', value='1')
+              |No
             br
             label(for='markRead') Mark My Notifications as Read
               br
               input#read(type='radio', name ='markRead', value='1')
-              | Mark my notifications as read once Brief has been sent
+              |Yes
               input#unread(type='radio', name ='markRead', value='0')
-              |Only show me unread notifications
+              |No
             br
             label(for='dayOld') Include notifications older than a day
               br
               input#dayOld(type='radio', name ='dayOld', value='1')
-              |Show me notifications that are more than a day old
+              |Yes
               input#noDayOld(type='radio', name ='dayOld', value='0')
-              |Don't show me old notifications
+              |No
             br
             button#save-changes.btn.btn-primary(type=submit) Update Your Preferences
-          button#unsubscribe.btn.btn-primary Unsubscribe
+            button#unsubscribe.btn.btn-primary Unsubscribe
           br
           #notification.alert(style="display:none;")
       include includes/footer.pug
