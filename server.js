@@ -52,11 +52,9 @@ app.get('/server-get', (req, res) => {
   const tradeToken = req.query.token;
   const fbID = parseInt(req.query.fbid, 10);
   const url = `https://graph.facebook.com/oauth/access_token?${clientCredentialString}&grant_type=fb_exchange_token&fb_exchange_token=${tradeToken}`;
-  console.log(url);
   request
   .get(url)
   .end(function(err, resp){
-    console.log(resp.text);
     const data = parseExtend(resp.text);
     // logic used to compare search results with the input from user
     const nowTime = Math.round(new Date().getTime() / 1000.0);
