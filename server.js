@@ -19,7 +19,7 @@ const io = require('socket.io', { rememberTransport: false,
                                  .listen(app.listen(port, ipaddr));
 
 const clientID = process.env.FB_CLIENT_ID;
-const clientSecret = process.env.FB_CLIENT_ID;
+const clientSecret = process.env.FB_CLIENT_SECRET;
 const clientCredentialString = `client_id=${clientID}&client_secret=${clientSecret}`;
 
 const db = mongojs(inc.connection_string, ['ulist']);
@@ -52,18 +52,20 @@ app.get('/server-get', (req, res) => {
   const tradeToken = req.query.token;
   const fbID = parseInt(req.query.fbid, 10);
   const url = `https://graph.facebook.com/oauth/access_token?${clientCredentialString}&grant_type=fb_exchange_token&fb_exchange_token=${tradeToken}`;
+  console.log(url);
   request
   .get(url)
-  .end(function(err, res){
-      const data = parseExtend(body);
-      // logic used to compare search results with the input from user
-      const nowTime = Math.round(new Date().getTime() / 1000.0);
-      const combTime = Number(data.expires) + nowTime;
-      Users.update({ fbid: fbID }, { $set: { 'atokens.perm': { tok: data.access_token, exp: combTime, date_updated: nowTime } } },
-            () => {
-              res.send('Token Updated');
-            }
-          );
+  .end(function(err, resp){
+    console.log(resp.text);
+    const data = parseExtend(resp.text);
+    // logic used to compare search results with the input from user
+    const nowTime = Math.round(new Date().getTime() / 1000.0);
+    const combTime = Number(data.expires) + nowTime;
+    Users.update({ fbid: fbID }, { $set: { 'atokens.perm': { tok: data.access_token, exp: combTime, date_updated: nowTime } } },
+          () => {
+            res.send('Token Updated');
+          }
+        );
   });
 });
 

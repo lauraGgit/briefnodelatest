@@ -2,22 +2,21 @@ doctype html
 html(lang="en")
     include includes/head.pug
     body
-      script(src='/sdk-load.js')
-      script(src='/fr-extend-get-no-socket.js')
-      #content
-        #title
-          img.logo(src='images/brief-logo.svg' title="Brief")
-          h6 Your Daily Facebook Email
-          a.btn.btn-primary.btn-xs(class="faq-link", href="/faq") FAQ
-          #welcome
-            button#auth.btn.btn-primary.btn-lg(style='display:none') Connect your Facebook account
-        #loading(style='width: 750px; margin: 10px;display:none;')
-            h2 Look at you, you're already logged in to Facebook.
-            h3 Hang out a sec while we pull up your settings
-            img(id='load-gif', class='load-gif', src='images/loading.gif')
-        #settings(style='width: 750px; margin: 10px;display:none;')
-          p Brief permissions need to be renewed. Please reactivate Brief to continue receiving your updates.
-          #notification.alert(style="display:none;")
-          #renew2.btn.btn-primary.btn-lg Renew Brief Subscription
-          #results
-      include includes/footer.pug
+        script(src='/fr-extend-get-no-socket.js')
+        #content
+            #title
+              img.logo(src='images/brief-logo.svg' title="Brief")
+              h6 Your Daily Facebook Email
+              a.btn.btn-primary.btn-xs(class="faq-link", href="/") Home
+              #welcome
+                button#auth.btn.btn-primary.btn-lg(style='display:none') Connect your Facebook account
+            #loading(style='width: 750px; margin: 10px;display:none;')
+              h2 Look at you, you're already logged in to Facebook.
+              h3 Hang out a sec while we pull up your settings
+              img(id='load-gif', class='load-gif', src='images/loading.gif')
+            #settings(style='width: 750px; margin: 10px;display:none;')
+              p Brief permissions need to be renewed. Please reactivate Brief to continue receiving your updates.
+              #notification.alert(style="display:none;")
+              #renew2.btn.btn-primary.btn-lg Renew Brief Subscription
+              #results
+        include includes/footer.pug
