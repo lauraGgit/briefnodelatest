@@ -14,15 +14,6 @@ $(document).ready(function() {
     $fbAuth.click(function(e){ e.preventDefault(); FB.login(function(resp){ console.log('login');},{scope: 'email,user_likes,manage_notifications'}); });
     if(!logged){ $fbAuth.show();}
 
-    //Load FB api
-  //   window.fbAsyncInit = function() {
-  // FB.init({
-  //   appId      : 282611145100368,
-  //   status     : true, // check login status
-  //   cookie     : true, // enable cookies to allow the server to access the session
-  //   xfbml      : true  // parse XFBML
-  // });
-
   FB.Event.subscribe('auth.authResponseChange', function(response) {
 
     // Here we specify what we do with the response anytime this event occurs.
