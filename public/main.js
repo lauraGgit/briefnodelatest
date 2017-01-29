@@ -1,17 +1,15 @@
 var socket = io.connect();
-var e = 0;
 
 $(document).ready(function() {
+
   $.validate();
-  logged = false;
-  //$('#auth').click(alert(''));
-  $settingForm = $('#setForm');
-  $fbAuth = $('#auth');
-  $emailInp = $('#email');
-  //$readInp = $('input[name=radioName]:checked', '#setForm');
-  $alert = $('#notification');
-  $unSub = $('#unsubscribe');
-  $settings = $('#settings');
+  var logged = false;
+  var $settingForm = $('#setForm');
+  var $fbAuth = $('#auth');
+  var $emailInp = $('#email');
+  var $alert = $('#notification');
+  var $unSub = $('#unsubscribe');
+  var $settings = $('#settings');
 
   //Init Login Functions
   $fbAuth.click(function(e){
