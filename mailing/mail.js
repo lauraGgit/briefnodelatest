@@ -243,7 +243,7 @@ function shouldDisplayOld(displayOldNotifications, updatedTime) {
   if (displayOldNotifications === 1) {
     return true;
   }
-  return dateUtil.findMoreRecent(notification.updated_time);
+  return dateUtil.findMoreRecent(updatedTime);
 }
 
 
