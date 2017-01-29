@@ -4,27 +4,8 @@ const request = require('superagent');
 const fbConnection = require('../utils/fbConnection');
 const mailUtil = require('./mailUtil');
 const dateUtil = require('../utils/dateUtils');
-const dbConfig = require('../utils/dbConfig');
 
-const db = mongojs(dbConfig.connection_string, ['ulist']);
-const Users = db.collection('ulist');
-
-Users.find({ active: 1 }).forEach(
-  (err, user) => {
-    if (err) console.log('throwing err');
-    if (err) throw (err);
-    if (user) {
-      const validToken = isNotExpired(user);
-      if (validToken) {
-        buildNotificationEmail(user);
-      } else {
-        sendRenewalEmail(user);
-      }
-    }
-  });
-
-db.close();
-
+let exportFunctions = {};
 /**
  * Run function to grab the facebook request information and then builds an email.
  * @param {object} user - An object of a user's details and settings.
@@ -377,3 +358,9 @@ function markRead(notifications, validToken) {
     }
   });
 }
+
+exportFunctions.buildNotificationEmail = buildNotificationEmail;
+exportFunctions.isNotExpired = isNotExpired;
+exportFunctions.sendRenewalEmail = sendRenewalEmail;
+
+module.exports = exportFunctions;

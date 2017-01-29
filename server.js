@@ -5,6 +5,8 @@ const mongojs = require('mongojs');
 const inc = require('./utils/dbConfig');
 const fbConnection = require('./utils/fbConnection');
 const request = require('superagent');
+const mailBrief = require('./mailing/mail.js');
+const cron = require('node-schedule');
 
 const app = express();
 const ipaddr = process.env.OPENSHIFT_NODEJS_IP;
@@ -24,6 +26,22 @@ const clientCredentialString = `client_id=${clientID}&client_secret=${clientSecr
 
 const db = mongojs(inc.connection_string, ['ulist']);
 const Users = db.collection('ulist');
+
+cron.scheduleJob('0 8 * * *', () => {
+  Users.find({ active: 1 }).forEach(
+    (err, user) => {
+      if (err) console.log('throwing err');
+      if (err) throw (err);
+      if (user) {
+        const validToken = mailBrief.isNotExpired(user);
+        if (validToken) {
+          mailBrief.buildNotificationEmail(user);
+        } else {
+          mailBrief.sendRenewalEmail(user);
+        }
+      }
+    });
+});
 
 
 app.set('views', `${__dirname}/tpl`);
