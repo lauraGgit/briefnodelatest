@@ -3,16 +3,15 @@ var socketConnected = false;
 
 socket.on('message', function(data){
   socketConnected = true;
-  console.log(data.message);
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
 });
 
-(function(d, s, id){
-   var js, fjs = d.getElementsByTagName(s)[0];
-   if (d.getElementById(id)) {return;}
-   js = d.createElement(s); js.id = id;
-   js.src = "//connect.facebook.net/en_US/sdk.js";
-   fjs.parentNode.insertBefore(js, fjs);
- }(document, 'script', 'facebook-jssdk'));
 
 window.fbAsyncInit = function() {
   FB.init({
@@ -145,7 +144,7 @@ window.fbAsyncInit = function() {
     //Populate existing settings
     socket.on('sendback', function (data) {
       if(data) {
-          console.log("Sendback Socket Response")
+          console.log("Sendback Socket Response");
           $('#loading').fadeOut();
           $settings.slideDown("slow");
 
@@ -194,7 +193,7 @@ window.fbAsyncInit = function() {
         $alertDiv.stop().removeClass("alert-warning alert-success alert-danger alert-info").addClass('alert-'+alertClass).html(text).fadeIn(300).delay(1200).fadeOut(300);
     }
   });
-}
+};
 
 function readIO(v){
   if (v == 'read'){

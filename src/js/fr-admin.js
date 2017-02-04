@@ -1,163 +1,100 @@
-var socket = io.connect();
-var socketConnected = false;
+var scaffold = require('./frontendScaffold');
+scaffold.frontendScaffold(true, document, adminUserVerification,
+  additionalPageFunctions);
 
-socket.on('message', function(data){
-  socketConnected = true;
-});
-
-window.fbAsyncInit = function() {
-  FB.init({
-    appId      : '282611145100368',
-    xfbml      : true,
-    version    : 'v2.3'
+function adminUserVerification(userID, socket){
+  console.log('Verifying Admin');
+  return socket.emit('send admin', {fbid: userID}, function(){
+    console.log('Sent User Id for privilege Verification');
   });
-  FB.AppEvents.logPageView();
+}
 
-  $(document).ready(function(){
-    socket.emit('admin-page-called', 'text');
-    $.validate();
-    var $settingForm = $('#setForm');
-    var $fbAuth = $('#auth');
-    var $alert = $('#notification');
-    var $unSub = $('#unsubscribe');
-    var $settings = $('#settings');
+function additionalPageFunctions(socket){
+  socket.on('admin return', function (data) {
+    console.log('admin recieved');
+    if(data) {
+      console.log(data);
+      $('#loading').fadeOut();
+      $('#settings').fadeIn();
+      buildTable(data, $('#users'), function(){
+        $('.active-btn').click(function(e){
+          e.preventDefault();
+          var send = {"fbid": parseInt($(this).parents("tr").attr("id"),10),
+                      currState: parseInt($(this).attr("id"),10)};
+          socket.emit('admin update active', send);
+        });
 
-    checkFacebookLoginState(); // 1st Check Login State
-
-    function checkFacebookLoginState() {
-      console.log("Getting User Facebook Login State");
-      FB.getLoginStatus(function(response) {
-        loginStatusCallback(response);
+        $('.delete-btn').click(function(e){
+          e.preventDefault();
+          var id = parseInt($(this).parents("tr").attr("id"),10);
+          socket.emit('admin delete', {"fbid": id});
+          $('#'+id).remove();
+        });
       });
+    } // End Table Build
+    else {
+      console.log("There is a problem:");
     }
-
-    function loginStatusCallback(response){
-      console.log("fb Subscribe Callback Init");
-      // Here we specify what we do with the response anytime this event occurs.
-      if (response.status === 'connected') {
-        successfullLoginCallback(response.authResponse.accessToken, response.authResponse.expiresIn);
-      } else if (response.status === 'not_authorized') {
-        console.log("App Not Authorized");
-        alertNote($alert, 'warning', 'Please allow Brief access to Facebook.');
-      } else {
-        console.log("Not Logged in");
-        alertNote($alert, 'warning', 'Please login to allow Brief access to Facebook.');
-      }
-    }// end subScribeCallback
-
-    //Add button login functionality
-    //TODO add to global functionality
-    $fbAuth.click(function(e){
-      e.preventDefault();
-      FB.login(function(response){
-        successfullLoginCallback(response.authResponse.accessToken, response.authResponse.expiresIn, true);
-        },
-        {scope: 'email,user_likes,manage_notifications'});
-      });
-
-    // Here we run a very simple test of the Graph API after login is successful.
-    function successfullLoginCallback(token, expire) {
-      console.log("User logged into Facebook successfully.");
-
-      //Update UI
-      $fbAuth.fadeOut("slow");
-      $('#loading').fadeIn("slow");
-      $('#welcome').fadeOut();
-
-      FB.api('/me', function(response) {
-        const userID = response.id;
-        if(socketConnected){
-          socket.emit('send admin', {fbid: userID}, function(){
-            console.log('Sent User Id for privilege Verification');
-          });
-        } else {
-          console.log('Socket Not Yet loaded');
-        }
-      }); //End Fb Response
-    } //End Success Callback
-
-      socket.on('admin return', function (data) {
-        console.log('admin recieved');
-        if(data) {
-          console.log(data);
-          $('#loading').fadeOut();
-          $('#settings').fadeIn();
-          buildTable(data, $('#users'));
-        }// End Table Build
-        else {
-          console.log("There is a problem:");
-        }
-      }); //End Admin Return
-
-      socket.on('not admin', function (data) {
-          if(data) {
-            alert("not admin");
-            $('#settings').remove();
-            $('#loading').fadeOut();
-          } else {
-              console.log("There is a problem:");
-          }
-      });
-
-      socket.on('admin active', function(data){
-          if (data){
-            if(data.active == 1){
-              $('#'+data.fbid+ " .aCell")
-                .addClass("success")
-                .removeClass("danger");
-              $('#'+data.fbid + " .active-btn")
-                .text("On")
-                .attr("id", 1);
-            } else {
-              $('#'+data.fbid+ " .aCell")
-                .addClass("danger")
-                .removeClass("success");
-              $('#'+data.fbid + " .active-btn")
-                .text("Off")
-                .attr("id", 0);
-            }
-          }
-        });
-
-        socket.on('admin more-user',function(data) {
-            if(data){
-              buildTable( data, $('#users') );
-            }
-          });
-
-        socket.on('admin refresh return',function(data) {
-          if(data) {
-            $('#users td').remove();
-            buildTable(data,$('#users'));
-          }
-        });
-
-        //Infinite Pagnination
-        skipNum = 20;
-        $('#more-users').click(function(e){
-          e.preventDefault();
-          socket.emit('admin more', skipNum);
-          skipNum += 20;
-        });
-
-        $('#refresh').click(function(e){
-          e.preventDefault();
-          socket.emit('admin refresh', true);
-        });
-
-        function alertNote($alertDiv, alertClass, text){
-          $alertDiv.stop().removeClass("alert-warning alert-success alert-danger alert-info").addClass('alert-'+alertClass).html(text).fadeIn(300).delay(1200).fadeOut(300);
-        }
   });
-};
 
-(function(d, s, id){
-   var js, fjs = d.getElementsByTagName(s)[0];
-   if (d.getElementById(id)) {return;}
-   js = d.createElement(s); js.id = id;
-   js.src = "//connect.facebook.net/en_US/sdk.js";
-   fjs.parentNode.insertBefore(js, fjs);
- }(document, 'script', 'facebook-jssdk'));
+  socket.on('not admin', function (data) {
+      if(data) {
+        alert("not admin");
+        $('#settings').remove();
+        $('#loading').fadeOut();
+      } else {
+          console.log("There is a problem:");
+      }
+  });
+
+  socket.on('admin active', function(data){
+      if (data){
+        if(data.active == 1){
+          $('#'+data.fbid+ " .aCell")
+            .addClass("success")
+            .removeClass("danger");
+          $('#'+data.fbid + " .active-btn")
+            .text("On")
+            .attr("id", 1);
+        } else {
+          $('#'+data.fbid+ " .aCell")
+            .addClass("danger")
+            .removeClass("success");
+          $('#'+data.fbid + " .active-btn")
+            .text("Off")
+            .attr("id", 0);
+        }
+      }
+    });
+
+    socket.on('admin more-user',function(data) {
+        if(data){
+          buildTable( data, $('#users') );
+        }
+      });
+
+    socket.on('admin refresh return',function(data) {
+      if(data) {
+        $('#users td').remove();
+        buildTable(data,$('#users'), socket);
+      }
+    });
+
+    //Infinite Pagnination
+    skipNum = 20;
+    $('#more-users').click(function(e){
+      e.preventDefault();
+      socket.emit('admin more', skipNum);
+      skipNum += 20;
+    });
+
+    $('#refresh').click(function(e){
+      e.preventDefault();
+      socket.emit('admin refresh', true);
+    });
+
+  return socket;
+}
 
 function readIO(v){
   if (v == 'read'){
@@ -181,23 +118,11 @@ function dateFormat(d){
   return time.toDateString();
 }
 
-function buildTable(UserArray, $table){
+function buildTable(UserArray, $table, callback){
           for (user = 0; user < UserArray.length; user++){
             buildRow(UserArray[user],$table);
           }//End Row Loop
-          $('.active-btn').click(function(e){
-            e.preventDefault();
-            var send = {"fbid": parseInt($(this).parents("tr").attr("id"),10),
-                        currState: parseInt($(this).attr("id"),10)};
-            socket.emit('admin update active', send);
-          });
-
-          $('.delete-btn').click(function(e){
-            e.preventDefault();
-            var id = parseInt($(this).parents("tr").attr("id"),10);
-            socket.emit('admin delete', {"fbid": id});
-            $('#'+id).remove();
-          });
+    callback();
 }
 
 function buildRow(obj, $table){

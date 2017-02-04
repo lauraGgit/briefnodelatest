@@ -191,7 +191,6 @@ io.sockets.on('connection', (socket) => {
       if (err) throw err;
       if (user) {
         if (user.priv.admin == 1){
-          console.log('is admin');
           Users.find().sort({"updated": -1}).limit(20).toArray(function(err, allUsers){
             callBackAdmin('admin return', allUsers);
           });
