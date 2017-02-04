@@ -1,10 +1,14 @@
 var scaffold = require('./frontendScaffold');
-scaffold.frontendScaffold(true, document, adminUserVerification,
-  additionalPageFunctions);
 
-function adminUserVerification(userID, socket){
+scaffold.frontendScaffold(true,
+  document,
+  adminUserVerification,
+  additionalPageFunctions
+);
+
+function adminUserVerification(facebookLoginResponse, socket){
   console.log('Verifying Admin');
-  return socket.emit('send admin', {fbid: userID}, function(){
+  return socket.emit('send admin', {fbid: facebookLoginResponse.id}, function(){
     console.log('Sent User Id for privilege Verification');
   });
 }
@@ -16,7 +20,7 @@ function additionalPageFunctions(socket){
       console.log(data);
       $('#loading').fadeOut();
       $('#settings').fadeIn();
-      buildTable(data, $('#users'), function(){
+      buildTable(data, $('#users'), function(socket){
         $('.active-btn').click(function(e){
           e.preventDefault();
           var send = {"fbid": parseInt($(this).parents("tr").attr("id"),10),

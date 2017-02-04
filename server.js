@@ -48,7 +48,7 @@ app.set('views', `${__dirname}/tpl`);
 app.set('view engine', 'pug');
 app.engine('pug', require('pug').__express);
 app.use(express.static(`${__dirname}/public`));
-const pages = ['page', 'faq', 'extend', 'new-user-trade', 'admin'];
+const pages = ['page', 'faq', 'renew', 'new-user-trade', 'admin'];
 pages.forEach((page) => {
   console.log(page);
   let url = `/${page}`;

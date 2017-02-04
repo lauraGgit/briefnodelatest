@@ -2,7 +2,7 @@ doctype html
 html(lang="en")
     include includes/head.pug
     body
-        script(src='/fr-extend-get-no-socket.js')
+        script(src='./renew.js')
         #content
             #title
               img.logo(src='images/brief-logo.svg' title="Brief")
@@ -17,6 +17,6 @@ html(lang="en")
             #settings(style='width: 750px; margin: 10px;display:none;')
               p Brief permissions need to be renewed. Please reactivate Brief to continue receiving your updates.
               #notification.alert(style="display:none;")
-              #renew2.btn.btn-primary.btn-lg Renew Brief Subscription
+              #renew.btn.btn-primary.btn-lg Renew Brief Subscription
               #results
         include includes/footer.pug

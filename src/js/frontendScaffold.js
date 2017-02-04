@@ -69,38 +69,47 @@ var frontendScaffold = function(useSocket, doc, facebookConnectCallback, additio
         console.log("User logged into Facebook successfully.");
 
         //Update UI
-        $fbAuth.fadeOut("slow");
-        $('#loading').fadeIn("slow");
-        $('#welcome').fadeOut();
+        $fbAuth.fadeOut("slow", function(){
+          if(useSocket){
+            $('#loading').fadeIn("slow", function(){
+              $('#welcome').fadeOut();
+            });
+          } else {
+            $settings.fadeIn();
+          }
+        });
 
-        FB.api('/me', function(response) {
-          const userID = response.id;
+        FB.api('/me', function(loginResponse) {
           if (useSocket) {
             if (socketConnected) {
-              facebookConnectCallback(userID, socket);
+              facebookConnectCallback(loginResponse, socket);
             } else {
               console.log('Socket Not Yet loaded');
             }
           } else {
-            facebookConnectCallback(userID);
+            facebookConnectCallback(loginResponse);
           }
         }); //End Fb Response
       } //End successfullLoginCallback
 
-      additionalPageFunctions(socket);
-
-      function alertNote($alertDiv, alertClass, text){
-        $alertDiv.stop()
-          .removeClass("alert-warning alert-success alert-danger alert-info")
-          .addClass('alert-'+alertClass)
-          .html(text)
-          .fadeIn(300)
-          .delay(1200)
-          .fadeOut(300);
+      if(additionalPageFunctions){
+        //Optional Page Functions
+        additionalPageFunctions(socket);
       }
 
     }); // End document ready
   }; //End Window Async
 }
 
+function alertNote($alertDiv, alertClass, text){
+  $alertDiv.stop()
+    .removeClass("alert-warning alert-success alert-danger alert-info")
+    .addClass('alert-'+alertClass)
+    .html(text)
+    .fadeIn(300)
+    .delay(1200)
+    .fadeOut(300);
+}
+
 exports.frontendScaffold = frontendScaffold;
+exports.alertNote = alertNote;

@@ -73,7 +73,7 @@ function promiseRequest(url) {
  */
 function sendRenewalEmail(user) {
   const renewalEmailText = "Your Facebook Connection has Expired. Please go log back into \
-                            <a href='http://www.brief-fb.me/extend'>Brief</a> to update your credentials.\
+                            <a href='https://briefnodelatest-dailyemail.rhcloud.com/renew'>Brief</a> to update your credentials.\
                             <br /> And don't worry, this is natural. Facebook requires that you log back in \
                              about every 60 days to make sure you still need access.";
   mailUtil.sendMail(renewalEmailText, 'Brief - Your Daily Facebook Email >> ACTION NEEDED', user.email);
