@@ -1,22 +1,10 @@
 $(document).ready(function() {
   $.validate();
-  var logged = false;
   var $extendBtn = $('#extend');
   var $fbAuth = $('#auth');
   var $alert = $('#notification');
   var $settings = $('#settings');
   var $renew2 = $('#renew2');
-
-  //Init Login Functions
-  $fbAuth.click(function(e){
-    e.preventDefault();
-    FB.login(function(resp){
-      console.log('login');
-    },
-    {scope: 'email,user_likes,manage_notifications'});
-  });
-
-  if(!logged){ $fbAuth.show();}
 
   //Load FB api
   window.fbAsyncInit = function() {
@@ -27,35 +15,60 @@ $(document).ready(function() {
     });
     // FB.AppEvents.logPageView();
 
-    FB.Event.subscribe('auth.authResponseChange', function(response) {
+    checkFacebookLoginState(); // 1st Check Login State
+
+    function checkFacebookLoginState() {
+      console.log("Getting User Facebook Login State");
+      FB.getLoginStatus(function(response) {
+        loginStatusCallback(response);
+      });
+    }
+
+    function loginStatusCallback(response){
+      console.log("fb Subscribe Callback Init");
       // Here we specify what we do with the response anytime this event occurs.
       if (response.status === 'connected') {
-        $fbAuth.fadeOut("slow");
-        $('#loading').fadeIn("slow");
-        $('#welcome').fadeOut();
-        logged = true;
-        successAPI(response.authResponse.accessToken, response.authResponse.expiresIn);
+        successfullLoginCallback(response.authResponse.accessToken, response.authResponse.expiresIn);
       } else if (response.status === 'not_authorized') {
-        $('#auth').fadeIn("slow").click(function(e) {
-          e.preventDefault();
-          console.log('clicked');
-            FB.login(function(response) {
-            // handle the response
-            successAPI(response.authResponse.accessToken, response.authResponse.expiresIn);
-            }, {scope: 'email,user_likes,manage_notifications'});
-        });
+        console.log("App Not Authorized");
+        alertNote($alert, 'warning', 'Please allow Brief access to Facebook.');
       } else {
-        $('#auth').fadeIn("slow").click(function(e) {
-          e.preventDefault();
-          console.log('clicked');
-          FB.login(function(response) {
-            // handle the response
-          successAPI(response.authResponse.accessToken, response.authResponse.expiresIn);
-          }, {scope: 'email,user_likes,manage_notifications'});
-        });
+        console.log("Not Logged in");
+        alertNote($alert, 'warning', 'Please login to allow Brief access to Facebook.');
       }
-  });
-};
+    }// end subScribeCallback
+
+    //Add button login functionality
+    //TODO add to global functionality
+    $fbAuth.click(function(e){
+      e.preventDefault();
+      FB.login(function(response){
+        successfullLoginCallback(response.authResponse.accessToken, response.authResponse.expiresIn, true);
+        },
+        {scope: 'email,user_likes,manage_notifications'});
+      });
+
+  // Here we run a very simple test of the Graph API after login is successful.
+  function successfullLoginCallback(token, expire) {
+    $('#loading').fadeOut();
+    $settings.slideDown("slow");
+
+    //console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+      id_send = response.id;
+
+      $renew2.click(function(e){
+        e.preventDefault();
+        var parameters = { fbid: id_send, token: token };
+        $.get( '/server-get',parameters, function(data) {
+          alertNote($alert, 'success', 'You have are now all set to keep receiving your Briefs!');
+          console.log(data);
+        });
+      });
+
+    });
+  }
+}; //End window.fbAsyncInit
 
 // Load the SDK asynchronously
 (function(d){
@@ -66,26 +79,7 @@ $(document).ready(function() {
  ref.parentNode.insertBefore(js, ref);
 }(document));
 
-// Here we run a very simple test of the Graph API after login is successful.
-function successAPI(token, expire) {
-  $('#loading').fadeOut();
-  $settings.slideDown("slow");
 
-  //console.log('Welcome!  Fetching your information.... ');
-  FB.api('/me', function(response) {
-    id_send = response.id;
-
-    $renew2.click(function(e){
-      e.preventDefault();
-      var parameters = { fbid: id_send, token: token };
-      $.get( '/server-get',parameters, function(data) {
-        alertNote($alert, 'success', 'You have are now all set to keep receiving your Briefs!');
-        console.log(data);
-      });
-    });
-
-  });
-}
 // Helper Functions
    function alertNote($alertDiv, alertClass, text){
     $alertDiv.stop().removeClass("alert-warning alert-success alert-danger alert-info").addClass('alert-'+alertClass).html(text).fadeIn(300).delay(1200).fadeOut(300);

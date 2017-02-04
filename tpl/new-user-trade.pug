@@ -2,7 +2,7 @@ doctype html
 html(lang="en")
     include includes/head.pug
     body
-        script(src='/fr-extend-get-new-user.js')
+        script(src='./fr-extend-get-new-user.js')
         #content
             #title
               img.logo(src='images/brief-logo.svg' title="Brief")
@@ -18,22 +18,3 @@ html(lang="en")
             #settings(style='width: 750px; margin: 10px;display:none;')
               p ...Generating Account
         include includes/footer.pug
-//- doctype html
-//- html(lang="en")
-//-     include includes/head.pug
-//-     body
-//-     script(src='/fr-extend-get-new-user.js')
-//-     #content
-//-         #title
-//-           img.logo(src='images/brief-logo.svg' title="Brief")
-//-           h6 Your Daily Facebook Email
-//-           a.btn.btn-primary.btn-xs(class="faq-link", href="/faq") FAQ
-//-           #welcome
-//-         #loading(style='width: 750px; margin: 10px;display:none;')
-//-           h3 Creating Account
-//-           img(id='load-gif', class='load-gif', src='images/loading.gif')
-//-           #complete(style="display:none;")
-//-             h3 "Ok, your account is now all setup. Tomorrow, you'll wake up with a Brief in your inbox. Enjoy!"
-//-         #settings(style='width: 750px; margin: 10px;display:none;')
-//-               h3 Give us one more minute to take you back to your settings.
-//-       include includes/footer.pug

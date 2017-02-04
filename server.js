@@ -228,7 +228,7 @@ io.sockets.on('connection', (socket) => {
 
   socket.on('admin update active', function(data){
     if (data){
-      const toggleActive = 1
+      let toggleActive = 1
       if (data.currState == 1){
           toggleActive = 0;
       }

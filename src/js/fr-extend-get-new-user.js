@@ -6,6 +6,7 @@ $(document).ready(function() {
   var $settings = $('#settings');
   var $renew2 = $('#renew2');
 
+  window.fbAsyncInit = function() {
   //Init Login Functions
   $fbAuth.click(function(e){
     e.preventDefault();
@@ -18,7 +19,6 @@ $(document).ready(function() {
   if(!logged){ $fbAuth.show();}
 
   //Load FB api
-  window.fbAsyncInit = function() {
     FB.init({
       appId      : '282611145100368',
       xfbml      : true,
@@ -56,15 +56,6 @@ $(document).ready(function() {
   });
 };
 
-// Load the SDK asynchronously
-(function(d){
- var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
- if (d.getElementById(id)) {return;}
- js = d.createElement('script'); js.id = id; js.async = true;
- js.src = "//connect.facebook.net/en_US/all.js";
- ref.parentNode.insertBefore(js, ref);
-}(document));
-
 // Here we run a very simple test of the Graph API after login is successful.
 function successAPI(token, expire) {
   $('#loading').fadeIn("slow");
@@ -91,3 +82,12 @@ function successAPI(token, expire) {
   }
 
 });
+
+// Load the SDK asynchronously
+(function(d){
+ var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+ if (d.getElementById(id)) {return;}
+ js = d.createElement('script'); js.id = id; js.async = true;
+ js.src = "//connect.facebook.net/en_US/all.js";
+ ref.parentNode.insertBefore(js, ref);
+}(document));
