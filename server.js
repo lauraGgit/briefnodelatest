@@ -2,15 +2,21 @@
 require('dotenv').config({silent: true});
 const express = require('express');
 const mongojs = require('mongojs');
-const inc = require('./utils/dbConfig');
-const fbConnection = require('./utils/fbConnection');
 const request = require('superagent');
-const mailBrief = require('./mailing/mail.js');
 const cron = require('node-schedule');
 const app = express();
+
+const inc = require('./utils/dbConfig');
+const fbConnection = require('./utils/fbConnection');
+const mailBrief = require('./mailing/mail.js');
+
+
+const admin = require('./server-componenents/admin');
+const userSettings = require('./server-componenents/settings');
+
 const ipaddr = process.env.OPENSHIFT_NODEJS_IP;
 const port = parseInt(process.env.OPENSHIFT_NODEJS_PORT) || 8080;
-const admin = require('./server-componenents/admin');
+
 if (typeof ipaddr === 'undefined') {
   console.warn('No OPENSHIFT_NODEJS_IP environment variable');
 }
@@ -88,115 +94,9 @@ app.get('/server-get', (req, res) => {
 io.sockets.on('connection', (socket) => {
   socket.emit('message', { message: 'Socket Connected' });
 
-  socket.on('send id', (clientData) => {
-    socket.emit('sent id', true);
-    const callID = Number(clientData.fbid);
-    Users.findOne({ active: 1, fbid: callID }, (err, user) => {
-      if (err) throw err;
-      if (user) {
-        socket.emit('sendback', user);
-      } else {
-        socket.emit('no user', { noUser: true, fbid: clientData.fbid, email: clientData.email });
-      }
-    });
-  });
-
-  socket.on('add user', (clientData) => {
-    const callID = Number(clientData.fbid);
-    const settingsArray = determineSettings(clientData);
-    Users.insert({
-      fbid: callID,
-      email: clientData.email,
-      atoken: clientData.atoken,
-      atoken_exp: clientData.atoken_exp,
-      active: 1,
-      incRead: settingsArray[0],
-      mark_read: settingsArray[1],
-      oldNote: settingsArray[2],
-      created: clientData.cTime,
-      updated: clientData.cTime
-     },
-     socket.emit('user added', 'Successful User Added')
-   );
-  }); // End Add User
-
-  socket.on('save changes', (data) => {
-    const callID = Number(data.fbid);
-    const settingsArray = determineSettings(data);
-    Users.update({ fbid: callID },
-      { $set: {
-        email: data.email,
-        incRead: settingsArray[0],
-        updated: data.cTime,
-        mark_read: settingsArray[1],
-        oldNote: settingsArray[2] }
-      },
-      socket.emit('sucess changes', `updated profile: ${settingsArray[1]}`)
-    );
-  });
-
-  socket.on('unsubscribe', (data) => {
-    const callID = Number(data.fbid);
-    Users.update({ fbid: callID },
-      { $set: {
-        active: 0,
-        updated: data.cTime }
-    },
-    socket.emit('unsubscribe complete', 'unsubscribed'));
-  });
-
-  //Admin Functions
+  userSettings.userSettingSockets(socket, Users);
   admin.adminSocketFunctions(socket, Users);
 }); // close socket
-
-/**
- * A promise function to send a superagent request.
- * @param {string} url - Where to send the get request.
- */
-function promiseRequest(url) {
-  return new Promise((resolve, reject) => {
-    request
-    .get(url)
-    .end((err, res) => {
-      if (err) reject(err);
-      if (res) resolve(res);
-    });
-  });
-}
-
-// Extend CallBack Function
-// function extendCallBack(response) {
-//   let str = '';
-//
-//   // another chunk of data has been recieved, so append it to `str`
-//   response.on('data', (data) => {
-//     str += data;
-//   });
-//
-//   // the whole response has been recieved, so we just print it out here
-//   response.on('end', () => {
-//     const nowTime = Math.round(new Date().getTime() / 1000.0);
-//     const a = parseExtend(fbData);
-//     const combTime = Number(a.expires) + nowTime;
-//     Users.update({ fbid: callID }, { $set: { 'atokens.perm.tok': a.access_token, 'atokens.perm.exp': combTime, updated: nowTime, server: 1 } }, socket.emit('perm-server token updated', { fb: callID, number: a.access_token, exp: a.expires }));
-//   });
-// }
-
-function determineSettings(data) {
-  let readStatus = 1;
-  if (data.read !== null) {
-    readStatus = data.read;
-  }
-  let mark = 1;
-  if (data.mark !== null) {
-    mark = data.mark;
-  }
-  let olds = 1;
-  if (data.oldNote !== null) {
-    olds = data.oldNote;
-  }
-  return [readStatus, mark, olds];
-}
 
 function parseExtend(resp) {
   if (resp[0] == 'a') {

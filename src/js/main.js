@@ -12,6 +12,7 @@ function userVerification(facebookInfo, socket){
   var $emailInp = $('#email');
   var $alert = $('#notification');
   var $settings = $('#settings');
+  var $unSub = $('#unsubscribe');
 
   console.log('Checking if existing user');
   socket.emit('send id', {fbid: facebookInfo.userID}, function(){
@@ -57,37 +58,37 @@ function userVerification(facebookInfo, socket){
     }
   );
 
-    function prepNewUserSubmission(){
-      console.log('no user found');
-      $('#loading').fadeOut();
-      $settings.slideDown("slow");
-      $settingForm.before($('<h3/>')
-        .addClass('newUser')
-        .text("Looks like you don't have an account. Fill out the form below to start recieving your Daily Facebook Digest"));
-      $emailInp.val(facebookInfo.email);
-      $('input:radio[name=inRead]').filter('[value=1]').prop('checked',true);
-      $('input:radio[name=dayOld]').filter('[value=1]').prop('checked',true);
-      $('input:radio[name=markRead]').filter('[value=1]').prop('checked',true);
-      $('#save-changes').text('Create an account');
-    }
+  function prepNewUserSubmission(){
+    console.log('no user found');
+    $('#loading').fadeOut();
+    $settings.slideDown("slow");
+    $settingForm.before($('<h3/>')
+      .addClass('newUser')
+      .text("Looks like you don't have an account. Fill out the form below to start recieving your Daily Facebook Digest"));
+    $emailInp.val(facebookInfo.email);
+    $('input:radio[name=inRead]').filter('[value=1]').prop('checked',true);
+    $('input:radio[name=dayOld]').filter('[value=1]').prop('checked',true);
+    $('input:radio[name=markRead]').filter('[value=1]').prop('checked',true);
+    $('#save-changes').text('Create an account');
+  }
+
+  $unSub.click(function(e){
+      e.preventDefault();
+      console.log('clicked unsub');
+      $alert.addClass("alert-danger").html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><h4>Are you Sure!</h4><p>This will end all the awesome facebook emails you are recieving.</p><p><button type="button" id="unsubscribe-affirm" class="btn btn-danger">Yes, I want stop getting emails</button><button type="button" id="unsubscribe-cancel" class="btn btn-default">No, I still want to recieve emails</button></p>').fadeIn(300);
+      $('#unsubscribe-affirm').click(function(e){
+          nowTime = Math.round(new Date().getTime()/1000.0);
+          socket.emit('unsubscribe', {fbid: facebookInfo.userID, cTime: nowTime});
+          scaffold.alertNote($alert, 'success', 'You are now unsubscribed from Brief, sorry to see you go.');
+      });
+  });
 
   return socket;
 }
 
 function additionalPageFunctions(socket){
   var $alert = $('#notification');
-  var $unSub = $('#unsubscribe');
   var $settings = $('#settings');
-
-  $unSub.click(function(e){
-  		e.preventDefault();
-      $alert.addClass("alert-danger").html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><h4>Are you Sure!</h4><p>This will end all the awesome facebook emails you are recieving.</p><p><button type="button" id="unsubscribe-affirm" class="btn btn-danger">Yes, I want stop getting emails</button><button type="button" id="unsubscribe-cancel" class="btn btn-default">No, I still want to recieve emails</button></p>').fadeIn(300);
-      $('#unsubscribe-affirm').click(function(e){
-          nowTime = Math.round(new Date().getTime()/1000.0);
-          socket.emit('unsubscribe', {fbid: id_send, cTime: nowTime});
-          alertNote($alert, 'success', 'You are now unsubscribed from Brief, sorry to see you go.');
-      });
-  });
 
    //Populate existing settings
  socket.on('sendback', function (userSettings) {
@@ -124,7 +125,7 @@ function additionalPageFunctions(socket){
   socket.on('sucess changes', function (data) {
      if(data) {
        console.log(data);
-       alertNote($alert, 'success', 'Your changes were sucessfully changed.');
+       scaffold.alertNote($alert, 'success', 'Your changes were sucessfully changed.');
      } else {
          console.log("There is a problem:");
      }
