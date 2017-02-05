@@ -7,11 +7,11 @@ scaffold.frontendScaffold(false,
 
 function userVerification(facebookInfo, token){
   var parameters = { fbid: facebookInfo.userID, token: facebookInfo.token };
-  
+
   $('#renew').click(function(e){
     e.preventDefault();
     $.get( '/server-get',parameters, function(data) {
-      alertNote($alert, 'success', 'You have are now all set to keep receiving your Briefs!');
+      scaffold.alertNote($('#notification'), 'success', 'You have are now all set to keep receiving your Briefs!');
       console.log(data);
     });
   });

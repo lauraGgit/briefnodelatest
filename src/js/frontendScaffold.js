@@ -72,7 +72,7 @@ var frontendScaffold = function(useSocket, doc, facebookConnectCallback, additio
               $('#welcome').fadeOut();
             });
           } else {
-            $('settings').fadeIn();
+            $('#settings').fadeIn();
           }
         });
 
