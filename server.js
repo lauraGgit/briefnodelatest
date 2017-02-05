@@ -7,10 +7,10 @@ const fbConnection = require('./utils/fbConnection');
 const request = require('superagent');
 const mailBrief = require('./mailing/mail.js');
 const cron = require('node-schedule');
-
 const app = express();
 const ipaddr = process.env.OPENSHIFT_NODEJS_IP;
 const port = parseInt(process.env.OPENSHIFT_NODEJS_PORT) || 8080;
+const admin = require('./server-componenents/admin');
 if (typeof ipaddr === 'undefined') {
   console.warn('No OPENSHIFT_NODEJS_IP environment variable');
 }
@@ -145,109 +145,8 @@ io.sockets.on('connection', (socket) => {
     socket.emit('unsubscribe complete', 'unsubscribed'));
   });
 
-  socket.on('extend token', (data) => {
-    const callID = Number(data.fbid);
-    Users.update({ fbid: callID },
-       { $set: {
-         'atokens.extend':
-          { tok: data.token,
-            exp: data.exp }
-           }
-        });
-  });
-
-  socket.on('new perm-server token', (data) => {
-    const extendURL = `${fbConnection.host}${fbConnection.version}/oauth/access_token?${clientCredentialString}&grant_type=fb_exchange_token&fb_exchange_token=${data.tok}`;
-    promiseRequest(extendURL).then(
-      (fbData) => {
-        const nowTime = Math.round(new Date().getTime() / 1000.0);
-        const a = parseExtend(fbData);
-        const combTime = Number(a.expires) + nowTime;
-        Users.update(
-          { fbid: callID },
-          { $set: { 'atokens.perm.tok': a.access_token, 'atokens.perm.exp': combTime, updated: nowTime, server: 1 } },
-          socket.emit('perm-server token updated', { fb: callID, number: a.access_token, exp: a.expires }));
-      })
-    .catch((error) => { console.log(error); });
-  });
-
-  socket.on('new perm-client token', (data) => {
-    const callID = Number(data.fbid);
-    Users.update({ fbid: callID },
-      { $set:
-        {
-          'atokens.perm.tok': data.token,
-          'atokens.perm.exp': data.exp,
-           updated: data.cTime
-         }
-       },
-       socket.emit('perm-client token updated', { fb: callID, number: data.token, exp: data.exp }));
-  });
-
   //Admin Functions
-  socket.on('send admin', function (data) {
-    const callID = Number(data.fbid);
-    Users.findOne({active:1, fbid: callID }, function(err, user) {
-      if (err) throw err;
-      if (user) {
-        if (user.priv.admin == 1){
-          Users.find().sort({"updated": -1}).limit(20).toArray(function(err, allUsers){
-            callBackAdmin('admin return', allUsers);
-          });
-        } else {
-          socket.emit('not admin', {noUser:true, times: i, fbid: data.fbid, email: data.email });
-        }
-      } else {
-        socket.emit('no user', true);
-      }
-    });
-  });//end admin send
-
-  socket.on('admin more',function(data){
-    Users.find().sort({"updated": -1}).limit(20).skip(data).toArray(function(err,allUsers){
-      callBackAdmin('admin more-user', allUsers);
-    });
-  });
-
-  socket.on('admin refresh',function(data){
-    Users.find().sort({"updated": -1}).limit(20).toArray(function(err, allUsers){
-      callBackAdmin('admin refresh return', allUsers);
-    });
-  });
-
-  function callBackAdmin(socketCommandString, users){
-    if(users.length > 0){
-      users.forEach(user => {
-        delete user.atoken;
-        delete user.atoken_exp;
-      });
-      socket.emit(socketCommandString, users);
-    }
-  }
-
-  socket.on('admin update active', function(data){
-    if (data){
-      let toggleActive = 1
-      if (data.currState == 1){
-          toggleActive = 0;
-      }
-      Users.update({fbid: data.fbid}, {$set:{active: toggleActive}},
-        socket.emit('admin active',{fbid: data.fbid, active: toggleActive}
-      ));
-    } else {
-      socket.emit('sock error', true);
-    }
-  });
-
-  socket.on('admin delete', function(user){
-    if (data){
-      Users.remove({fbid: user.fbid}, 1);
-    } else {
-      socket.emit('sock error', true);
-    }
-  });
-
-  socket.on('admin-page-called', function(data){ console.log('recieved admin page');})
+  admin.adminSocketFunctions(socket, Users);
 }); // close socket
 
 /**
