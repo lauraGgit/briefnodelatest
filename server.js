@@ -88,33 +88,33 @@ app.get('/server-get', (req, res) => {
 io.sockets.on('connection', (socket) => {
   socket.emit('message', { message: 'Socket Connected' });
 
-  socket.on('send id', (data) => {
+  socket.on('send id', (clientData) => {
     socket.emit('sent id', true);
-    const callID = Number(data.fbid);
+    const callID = Number(clientData.fbid);
     Users.findOne({ active: 1, fbid: callID }, (err, user) => {
       if (err) throw err;
       if (user) {
         socket.emit('sendback', user);
       } else {
-        socket.emit('no user', { noUser: true, fbid: data.fbid, email: data.email });
+        socket.emit('no user', { noUser: true, fbid: clientData.fbid, email: clientData.email });
       }
     });
   });
 
-  socket.on('add user', (data) => {
-    const callID = Number(data.fbid);
-    const settingsArray = determineSettings(data);
+  socket.on('add user', (clientData) => {
+    const callID = Number(clientData.fbid);
+    const settingsArray = determineSettings(clientData);
     Users.insert({
       fbid: callID,
-      email: data.email,
-      incRead: settingsArray[0],
-      atoken: data.atoken,
-      atoken_exp: data.atoken_exp,
+      email: clientData.email,
+      atoken: clientData.atoken,
+      atoken_exp: clientData.atoken_exp,
       active: 1,
+      incRead: settingsArray[0],
       mark_read: settingsArray[1],
       oldNote: settingsArray[2],
-      created: data.cTime,
-      updated: data.cTime
+      created: clientData.cTime,
+      updated: clientData.cTime
      },
      socket.emit('user added', 'Successful User Added')
    );

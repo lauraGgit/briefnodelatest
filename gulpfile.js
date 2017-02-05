@@ -5,6 +5,7 @@ var gulp = require('gulp'),
 
 var paths = {
   scripts: ['src/js/**.js'],
+  serverScripts: ['server.js', 'mailing/**.js', 'utils/**.js'],
   css: 'src/css/*.css'
 };
 

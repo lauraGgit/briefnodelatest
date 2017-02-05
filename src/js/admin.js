@@ -6,9 +6,9 @@ scaffold.frontendScaffold(true,
   additionalPageFunctions
 );
 
-function adminUserVerification(facebookLoginResponse, socket){
+function adminUserVerification(facebookInfo, socket){
   console.log('Verifying Admin');
-  return socket.emit('send admin', {fbid: facebookLoginResponse.id}, function(){
+  return socket.emit('send admin', {fbid: facebookInfo.userID}, function(){
     console.log('Sent User Id for privilege Verification');
   });
 }
@@ -132,6 +132,7 @@ function buildTable(UserArray, $table, callback){
 function buildRow(obj, $table){
           $row = $('<tr />');
             for(var key in obj){
+              var cClass = "";
               var val = obj[key];
               switch(key){
                 case 'fbid':
@@ -147,10 +148,9 @@ function buildRow(obj, $table){
                   break;
                 case 'atokens':
                   $row.append($('<td />')
-                    .text(dateFormat(val['perm']['exp'])));
+                    .text(dateFormat(val.perm.exp)));
                   break;
                 case 'active':
-                  var cClass = "";
                   if(val == 1){
                     cClass = "success";
                     button = "On";
@@ -168,7 +168,6 @@ function buildRow(obj, $table){
                 case 'incRead':
                 case 'mark_read':
                 case 'oldNote':
-                  var cClass = "";
                   if(val == 1){
                     cClass = "success";
                   } else {

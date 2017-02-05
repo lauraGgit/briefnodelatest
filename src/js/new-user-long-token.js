@@ -5,11 +5,12 @@ scaffold.frontendScaffold(false,
   userVerification
 );
 
-function userVerification(facebookLoginResponse){
-  var parameters = { fbid: facebookLoginResponse.id, token: facebookLoginResponse.token };
+function userVerification(facebookInfo, token){
+  var parameters = { fbid: facebookInfo.userID, token: facebookInfo.token };
   $.get( '/server-get', parameters, function(data) {
     scaffold.alertNote($('#notification'), 'success', 'You have are now all set to keep receiving your Briefs!');
-    $('#complete').fadeIn(100).delay(1000).fadeOut(100);
-    setTimeout(window.location.replace("/"),15000);
+    $('#complete').fadeIn(100).delay(1000).fadeOut(100, function(){
+      window.location.replace("/");
+    });
   });
 }

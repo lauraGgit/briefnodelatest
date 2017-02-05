@@ -34,11 +34,8 @@ var frontendScaffold = function(useSocket, doc, facebookConnectCallback, additio
 
     $(doc).ready(function(){
       $.validate();
-      var $settingForm = $('#setForm');
       var $fbAuth = $('#auth');
       var $alert = $('#notification');
-      var $unSub = $('#unsubscribe');
-      var $settings = $('#settings');
 
       FB.getLoginStatus(function(response) {
         statusChangeCallback(response);
@@ -75,19 +72,25 @@ var frontendScaffold = function(useSocket, doc, facebookConnectCallback, additio
               $('#welcome').fadeOut();
             });
           } else {
-            $settings.fadeIn();
+            $('settings').fadeIn();
           }
         });
 
         FB.api('/me', function(loginResponse) {
+          var facebookUserInfo = {
+            userID: loginResponse.id,
+            token: token,
+            token_expiration: expire,
+            email: loginResponse.email
+          };
           if (useSocket) {
             if (socketConnected) {
-              facebookConnectCallback(loginResponse, socket);
+              facebookConnectCallback(facebookUserInfo, socket);
             } else {
               console.log('Socket Not Yet loaded');
             }
           } else {
-            facebookConnectCallback(loginResponse);
+            facebookConnectCallback(facebookUserInfo);
           }
         }); //End Fb Response
       } //End successfullLoginCallback
@@ -99,7 +102,7 @@ var frontendScaffold = function(useSocket, doc, facebookConnectCallback, additio
 
     }); // End document ready
   }; //End Window Async
-}
+};
 
 function alertNote($alertDiv, alertClass, text){
   $alertDiv.stop()
