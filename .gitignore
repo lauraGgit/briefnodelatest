@@ -53,6 +53,8 @@ jspm_packages
 # Yarn Integrity file
 .yarn-integrity
 
+**/full-js-static.js
+
 */full-js-static.js
 
 full-js-static.js
